@@ -23,19 +23,24 @@ def shutdown():
     shutdown_server()
     return 'Server shutting down...'
 
-@app.route('/watchers', methods=['GET', 'POST'])
+@app.route('/watchers', methods=['GET', 'POST', 'DELETE'])
 def list_watcher():
     if request.method == 'POST':
         if not request.json or \
                 'name' not in request.json or \
                 'command' not in request.json or \
                 'args' not in request.json:
-                    return jsonify({"status": 400, "reason": "login is missing"}), 400
+                    return jsonify({"status": 400, "reason": "Either [name|command|args] are missing"}), 400
         client.add_watcher(name=unicodedata.normalize('NFKD', request.json['name']).encode('ascii', 'ignore'),
                            command=unicodedata.normalize('NFKD', request.json['command']).encode('ascii', 'ignore'),
                            args=request.json['args'],
                            autostart=True)
         return jsonify({"status": 201, "reason": "Watcher created"}), 201
+    elif request.method == 'DELETE':
+        if not request.json or 'name' not in request.json:
+            return jsonify({"status": 400, "reason": "name is missing"}), 400
+        client.rm_watcher(watcher=unicodedata.normalize('NFKD', request.json['name']).encode('ascii', 'ignore'))
+        return jsonify({"status": 200, "reason": "Watcher deleted successfully"}), 200
     else:
         return jsonify(client.list())
 
