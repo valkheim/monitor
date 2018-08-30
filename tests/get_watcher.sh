@@ -1,4 +1,3 @@
-# list processes in a watcher
 NAME="ABC"
 [ -z "$1" ] || NAME="$1"
 curl --header "Content-Type: application/json" \

@@ -7,7 +7,7 @@ class App extends Component {
   async componentDidMount() {
     try {
       this.interval = setInterval(async () => {
-        const res = await fetch('http://localhost:8080/watchers')
+        const res = await fetch('http://127.0.0.1:8080/all')
         const watchers = await res.json()
         this.setState({
           watchers: watchers,

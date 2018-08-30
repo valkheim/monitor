@@ -1,35 +1,44 @@
-import unicodedata
+from unicodedata import normalize
 from flask import Flask, jsonify, request
-
 from flask_cors import CORS
-
 from circus_api.client import Client
 
 
 client = None
 app = Flask(__name__)
-
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 
 def stringify(s):
-    """Convert string from unicode to ascii charset"""
-    return unicodedata.normalize('NFKD', s).encode('ascii', 'ignore')
+    return normalize('NFKD', s).encode('ascii', 'ignore')
 
 
 def shutdown_server():
-    """Shutdown server after finishing handling the current request"""
     f = request.environ.get('werkzeug.server.shutdown')
     if f is None:
         raise RuntimeError('Not running with the Werkzeug Server')
+    #client.quit()
     f()
 
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
-    """Will shutdown server"""
+    """Shutdown server after finishing handling the current request"""
     shutdown_server()
     return 'Monitor shutting down...\n'
+
+
+@app.route('/all', methods=['GET'])
+def all():
+    """Get all informations on one route"""
+    watchers = {}
+    for w in client.list():
+        watchers[w] = {}
+        watchers[w]['status'] = client.status(w)
+        watchers[w]['pids'] = client.list(w)
+        watchers[w]['cmd'] = client.options(w)['cmd']
+        watchers[w]['args'] = client.options(w)['args']
+    return jsonify(watchers)
 
 
 @app.route('/stats/<watcher>', methods=['GET'])
@@ -40,21 +49,35 @@ def stats_handler(watcher):
 
 @app.route('/watcher/<watcher>', methods=['GET', 'DELETE'])
 def watcher_handler(watcher):
+    """handle specific watcher given as parameter <watcher>
+    GET     Retrieve a list of PIDs handled by watcher
+    DELETE  Delete the watcher
+    """
+    watcher = stringify(watcher)
     if request.method == 'DELETE':
         """Delete a watcher"""
-        if client.rm_watcher(watcher=stringify(watcher)) is True:
+        if client.rm_watcher(watcher) is True:
             return jsonify({'status': 200, 'reason': 'Watcher deleted successfully'}), 200
         else:
             return jsonify({'status': 400, 'reason': 'Cannot delete watcher'}), 400
     else:
         """Get the list of PIDs handled by a watcher"""
-        return jsonify(client.list(watcher=stringify(watcher)))
+        return jsonify({
+                       'status': client.status(watcher),
+                       'pids': client.list(watcher)
+                       })
 
 
 @app.route('/watchers', methods=['GET', 'POST'])
 def watchers():
+    """handle watchers
+    GET     Retrieve watchers names list
+    POST    Add a new watcher and start it
+            Parameters  - name (string)
+                        - command (string)
+                        - args (array of strings)
+    """
     if request.method == 'POST':
-        """Add a new watcher"""
         if not request.json or \
                 'name' not in request.json or \
                 'command' not in request.json or \
@@ -68,8 +91,7 @@ def watchers():
         else:
             return jsonify({'status': 400, 'reason': 'Cannot create watcher'}), 400
     else:
-        """Get the list of watchers names handled by the main arbiter"""
-        return jsonify(client.list())
+        return jsonify(client.status())
 
 
 if __name__ == '__main__':
