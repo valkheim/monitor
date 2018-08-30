@@ -1,9 +1,15 @@
 import unicodedata
 from flask import Flask, jsonify, request
+
+from flask_cors import CORS
+
 from circus_api.client import Client
+
 
 client = None
 app = Flask(__name__)
+
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 
 def stringify(s):
@@ -64,6 +70,7 @@ def watchers():
     else:
         """Get the list of watchers names handled by the main arbiter"""
         return jsonify(client.list())
+
 
 if __name__ == '__main__':
     client = Client(host='127.0.0.1', port=5555, timeout=15)
