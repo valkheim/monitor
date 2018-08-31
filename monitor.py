@@ -31,13 +31,15 @@ def shutdown():
 @app.route('/all', methods=['GET'])
 def all():
     """Get all informations on one route"""
-    watchers = {}
-    for w in client.list():
-        watchers[w] = {}
-        watchers[w]['status'] = client.status(w)
-        watchers[w]['pids'] = client.list(w)
-        watchers[w]['cmd'] = client.options(w)['cmd']
-        watchers[w]['args'] = client.options(w)['args']
+    watchers = []
+    for name in client.list():
+        w = {}
+        w['name'] = name
+        w['status'] = client.status(name)
+        w['pids'] = client.list(name)
+        w['cmd'] = client.options(name)['cmd']
+        w['args'] = client.options(name)['args']
+        watchers.append(w)
     return jsonify(watchers)
 
 

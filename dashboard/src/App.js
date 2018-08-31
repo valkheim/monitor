@@ -1,5 +1,6 @@
+import ReactTable from "react-table"
 import React, { Component } from 'react'
-import './App.css'
+import 'react-table/react-table.css'
 
 class App extends Component {
   state = {}
@@ -22,12 +23,46 @@ class App extends Component {
     clearInterval(this.interval)
   }
 
+  async removeWatcher(watcher) {
+    const res = await fetch('http://127.0.0.1:8080/watcher/'+watcher, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    const j = await res.json()
+    console.log(j)
+  }
 
   render() {
-    console.log(this.state)
+    const columns = [{
+      Header: 'Name',
+      accessor: 'name'
+    }, {
+      Header: 'Command',
+      accessor: 'cmd'
+    }, {
+      Header: 'Arguments',
+      accessor: 'args'
+    }, {
+      Header: 'Status',
+      accessor: 'status'
+    }, {
+      Header: 'PIDs',
+      accessor: 'pids'
+    }, {
+      Header: 'Controls',
+      accessor: 'name',
+      Cell: ({value}) => (
+        <button onClick={() => this.removeWatcher(value)}>Remove</button>
+      )
+    }]
     return (
       <div className="App">
-        {JSON.stringify(this.state, null, 2)}
+        <ReactTable
+          data={this.state.watchers}
+          columns={columns}
+        />
       </div>
     )
   }
