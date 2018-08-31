@@ -1,3 +1,19 @@
 .center {
   text-align: center;
 }
+
+.active {
+  color: #57d500;
+}
+
+.stopping {
+  color: #ffbf00;
+}
+
+.stopped {
+  color: #ff2e00;
+}
+
+.icon {
+  cursor: pointer;
+}

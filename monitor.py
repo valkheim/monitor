@@ -49,6 +49,33 @@ def stats_handler(watcher):
     return jsonify(client.stats(stringify(watcher)))
 
 
+@app.route('/watcher/start/<watcher>', methods=['GET'])
+def watcher_start_handler(watcher):
+    watcher = stringify(watcher)
+    if client.start(watcher) is True:
+        return jsonify({'status': 200, 'reason': 'Watcher started successfully'}), 200
+    else:
+        return jsonify({'status': 400, 'reason': 'Cannot start watcher'}), 400
+
+
+@app.route('/watcher/stop/<watcher>', methods=['GET'])
+def watcher_stop_handler(watcher):
+    watcher = stringify(watcher)
+    if client.stop(watcher) is True:
+        return jsonify({'status': 200, 'reason': 'Watcher stopped successfully'}), 200
+    else:
+        return jsonify({'status': 400, 'reason': 'Cannot stop watcher'}), 400
+
+
+@app.route('/watcher/restart/<watcher>', methods=['GET'])
+def watcher_restart_handler(watcher):
+    watcher = stringify(watcher)
+    if client.restart(watcher) is True:
+        return jsonify({'status': 200, 'reason': 'Watcher resarted successfully'}), 200
+    else:
+        return jsonify({'status': 400, 'reason': 'Cannot restart watcher'}), 400
+
+
 @app.route('/watcher/<watcher>', methods=['GET', 'DELETE'])
 def watcher_handler(watcher):
     """handle specific watcher given as parameter <watcher>
