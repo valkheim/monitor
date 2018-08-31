@@ -1,6 +1,7 @@
 import ReactTable from "react-table"
 import React, { Component } from 'react'
 import 'react-table/react-table.css'
+import './App.css'
 
 class App extends Component {
   state = {}
@@ -36,31 +37,38 @@ class App extends Component {
 
   render() {
     const columns = [{
-      Header: 'Name',
-      accessor: 'name'
-    }, {
-      Header: 'Command',
-      accessor: 'cmd'
-    }, {
-      Header: 'Arguments',
-      accessor: 'args'
-    }, {
-      Header: 'Status',
-      accessor: 'status'
-    }, {
-      Header: 'PIDs',
-      accessor: 'pids'
-    }, {
-      Header: 'Controls',
-      accessor: 'name',
-      Cell: ({value}) => (
-        <button onClick={() => this.removeWatcher(value)}>Remove</button>
-      )
+      Header: 'Process monitor',
+      columns: [{
+        Header: 'Name',
+        accessor: 'name'
+      }, {
+        Header: 'Command',
+        accessor: 'cmd'
+      }, {
+        Header: 'Arguments',
+        accessor: 'args'
+      }, {
+        Header: 'Status',
+        accessor: 'status',
+        className: 'center'
+      }, {
+        Header: 'PIDs',
+        accessor: 'pids',
+        className: 'center'
+      }, {
+        Header: 'Controls',
+        accessor: 'name',
+        className: 'center',
+        Cell: ({value}) => (
+          <button onClick={() => this.removeWatcher(value)}>Remove</button>
+        )
+      }]
     }]
     return (
       <div className="App">
         <ReactTable
           data={this.state.watchers}
+          noDataText="No process"
           columns={columns}
         />
       </div>
