@@ -57,7 +57,6 @@ class App extends Component {
         className: 'center'
       }, {
         Header: 'Controls',
-        accessor: 'name',
         className: 'center',
         Cell: ({value}) => (
           <button onClick={() => this.removeWatcher(value)}>Remove</button>
