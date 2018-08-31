@@ -83,10 +83,12 @@ class App extends Component {
         accessor: 'name'
       }, {
         Header: 'Command',
-        accessor: 'cmd'
-      }, {
-        Header: 'Arguments',
-        accessor: 'args'
+        accessor: 'cmd',
+        Cell: row => (
+          <span>
+            {row.row.name}{' '}{row.row._original.args.join(" ")}
+          </span>
+        )
       }, {
         Header: 'Status',
         accessor: 'status',
@@ -97,19 +99,19 @@ class App extends Component {
           </span>
         )
       }, {
-        Header: 'PIDs',
+        Header: 'PID',
         accessor: 'pids',
         className: 'center'
       }, {
         Header: 'Controls',
         accessor: 'name',
         className: 'center',
-        Cell: (row) => (
+        Cell: row => (
           <Fragment>
-            {row.row.status === 'stopped' && <FontAwesomeIcon className="fa-fw icon play" onClick={() => this.startWatcher(row.row.name)} icon={faPlay} />}
-            {row.row.status === 'active' && <FontAwesomeIcon className="fa-fw icon pause" onClick={() => this.stopWatcher(row.row.name)} icon={faPause} />}
-            <FontAwesomeIcon className="fa-fw icon reload" onClick={() => this.restartWatcher(row.row.name)} icon={faSyncAlt} />
-            <FontAwesomeIcon className="fa-fw icon remove" onClick={() => this.removeWatcher(row.row.name)} icon={faTimes} />
+            {row.row.status === 'stopped' && <FontAwesomeIcon className="icon play" onClick={() => this.startWatcher(row.row.name)} icon={faPlay} />}
+            {row.row.status === 'active' && <FontAwesomeIcon className="icon pause" onClick={() => this.stopWatcher(row.row.name)} icon={faPause} />}
+            <FontAwesomeIcon className="icon reload" onClick={() => this.restartWatcher(row.row.name)} icon={faSyncAlt} />
+            <FontAwesomeIcon className="icon remove" onClick={() => this.removeWatcher(row.row.name)} icon={faTimes} />
           </Fragment>
         )
       }]
@@ -120,6 +122,13 @@ class App extends Component {
           data={this.state.watchers}
           noDataText="No process"
           columns={columns}
+          collapseOnDataChange={false}
+          SubComponent={row => (
+            <div className="rowAdditional">
+              <em>More informations</em><br /><br />
+              {JSON.stringify(row.row._original)}
+            </div>
+          )}
         />
       </div>
     )

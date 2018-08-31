@@ -32,14 +32,15 @@ def shutdown():
 def all():
     """Get all informations on one route"""
     watchers = []
-    for name in client.list():
-        w = {}
-        w['name'] = name
-        w['status'] = client.status(name)
-        w['pids'] = client.list(name)
-        w['cmd'] = client.options(name)['cmd']
-        w['args'] = client.options(name)['args']
-        watchers.append(w)
+    if client is not None:
+        for name in client.list():
+            w = {}
+            w['name'] = name
+            w['status'] = client.status(name)
+            w['pids'] = client.list(name)
+            w['cmd'] = client.options(name)['cmd']
+            w['args'] = client.options(name)['args']
+            watchers.append(w)
     return jsonify(watchers)
 
 

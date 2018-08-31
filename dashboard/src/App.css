@@ -16,4 +16,10 @@
 
 .icon {
   cursor: pointer;
+  display: inline-block;
+  margin: 0 .5rem 0 .5rem;
+}
+
+.rowAdditional {
+  padding: 20px;
 }
